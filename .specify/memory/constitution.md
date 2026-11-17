@@ -1,0 +1,458 @@
+<!--
+Sync Impact Report
+==================
+Version change: (unfilled upstream template, no project values) -> 1.0.0
+
+Initial ratification. The previous .specify/memory/constitution.md was the
+unmodified upstream constitution-template with every placeholder still blank.
+
+Modified principles (template slot -> adopted principle):
+- principle slot 1 -> I. 篇幅硬上限 3000 字元，措辞不模糊
+- principle slot 2 -> II. 结论先行：摘要 → 论证
+- principle slot 3 -> III. 目录结构与编号：Block 建目录，Card 用标题，编号只活在导航页
+- principle slot 4 -> IV. 目录先行 + 人工审批门（NON-NEGOTIABLE）
+- principle slot 5 -> V. 示例可编译、标准可追溯
+  (the template's fifth slot was expanded to cover three principles)
+- (new slot) -> VI. 目标导向：读懂工程代码与 AI 生成代码
+- (new slot) -> VII. 工具链边界：只走 /speckit 流水线
+
+Added sections:
+- section slot 2 -> 内容与格式规范
+    subsections: 仓库目录结构 / 语言与排版 / 卡片骨架 / 卡片互链规则 /
+                 3000 字元的计量口径 / 不属于本项目的内容
+- section slot 3 -> 编写工作流与质量门
+    subsections: 流水线与 speckit 的映射 / 分阶段流程 /
+                 插入卡片与编号平移 / 单卡自检清单 / 提交纪律
+
+Removed sections: none
+
+Notes:
+- The template's 5 principle slots were expanded to 7. Principles are deliberately
+  atomic; each MUST/SHOULD clause is independently machine-checkable by
+  /speckit.plan (Constitution Check gate) and /speckit.analyze (CRITICAL findings).
+- The draft preamble (Part 0, usage instructions for the author) and the human
+  decision log (Part 2) were intentionally NOT carried into this file. Only the
+  constitution body was adopted.
+- Version 1.0.0 because no project-specific constitution existed to amend.
+  Ratified 2026-11-17 (human adoption date of the reviewed draft);
+  Last Amended 2026-11-18 (date this file was written).
+- Follow-up TODOs: none. Block partitioning and the per-card catalogue are tracked
+  in the navigation pages (C/README_C.md, CPP/README_CPP.md), not in this file.
+-->
+
+# 《每天5分钟玩转 C/C++》项目宪法
+
+本项目把 C 与 C++ 的语法知识拆解为可碎片化阅读的「卡片」，服务于一个具体读者画像：
+有工作基础、时间碎片化、目标是**能独立手写代码，并能读懂大模型生成的 C/C++ 代码**的工程师。
+
+本宪法约束卡片的粒度、结构、编号、审批流程与工具链边界。
+
+## 核心原则
+
+### I. 篇幅硬上限 3000 字元，措辞不模糊
+
+卡片最硬的约束是篇幅：**去掉标点与符号后的 3000 字元**（中文按字、英文/数字按连续串计 1 词），
+代码块合计不超过 120 行。超限即不合格，不存在"大卡"这一说。
+
+**理由**：读者在通勤、午休、值班间隙打开本仓库，每张卡片必须在 5 分钟内读完，否则"每天5分钟"的承诺失效，
+卡片就退化成需要额外精力的任务，读者会直接放弃。3000 字元上限同时反向约束作者：**写不下就说明该拆卡了**。
+
+- 每张卡片的计量 MUST NOT 超过 3000 字元（口径见「内容与格式规范」）。
+- 代码块合计 MUST NOT 超过 120 行。MUST NOT 存在"大卡"或"超限卡"。
+- 卡片 MUST 表述准确、措辞不模糊：每一个术语、每一条结论都 MUST 有明确的定义与边界，
+  MUST NOT 用"大概""差不多""一般来说"这类模糊表述代替事实。
+- 每张卡片 SHOULD 只承载一个核心知识点。发现知识点交杂时 SHOULD 拆成多张；
+  是否交杂由**人工**在导航复核时判断，AI MUST NOT 自行决定合并或拆分。
+- 每张卡片 MUST 在结尾给出「本卡边界」一句话，明确说明**本卡不讲什么**，把读者引向相邻卡片。
+- 相邻卡片之间 MUST NOT 重复同一段解释；重复内容 SHOULD 以后出现的卡片为准，前者只做超链接引用。
+- MUST NOT 收录纯习题 / 自测题 / 刷题卡片（练习由读者自行到 LeetCode 等平台进行）。
+
+### II. 结论先行：摘要 → 论证
+
+卡片体例固定为**论文式结构**：开头先给结论与速查表，再展开说明与论证。
+读者先「知其然」，需要时再回头「知其所以然」。
+
+**理由**：碎片化阅读只有一次机会。读者不会为了"理解原理"而重读长文，他需要在前 30 秒内知道
+"这个语法长什么样、什么时候用"，然后决定是否值得往下读。
+
+- 每张卡片 MUST 以「摘要」章节开头，篇幅 MUST 占全文的 10%~20%。
+- 每张卡片 MUST 包含至少一个**速查表**（表格或代码对照块），供读者跳过正文直接查。
+- 摘要之后 MUST 有「正文说明」章节展开原理、适用场景、常见坑。
+- 卡片 MUST NOT 设置「参考文献」章节。确需溯源时，MUST 以「延伸阅读」链接**本仓库内**的卡片。
+- 标题 MUST 是结论式的短句或名词短语，MUST NOT 使用"浅谈……""初探……"这类无信息量标题。
+
+### III. 目录结构与编号：Block 建目录，Card 用标题，编号只活在导航页
+
+知识体系采用二级编号：**Block（模块）→ Card（卡片）**，编号形式为 `B<m>C<n>`。
+但编号**不出现在卡片文件名里，也不出现在卡片正文里**——
+它只是**导航层的阅读顺序标识**，唯一权威来源是导航页。
+
+- **每个 Block 一个目录**：目录名 `B<两位补零>_<ASCII 短名>`，例如 `B02_pointers/`。
+  目录只是收纳盒，Block 的中文主题名放在导航页的分组标题里。
+- **卡片文件名 = 卡片标题**（中文直用），例如 `C/B02_pointers/指针与数组.md`。
+- 导航页里每张卡片占一行：**编号** `B2C3` + **标题超链接**（指向卡片文件）+ **一句话概括** + **复选框**。
+
+**理由**（四个诉求，一个设计同时满足）：
+
+1. **URL 稳定**：编号会因插入而平移。把编号放进文件名，等于给每张卡的链接绑上一颗定时炸弹——
+   插入一次，仓库里成片的链接就失效。去掉编号后，只要标题不变，链接永远有效。
+2. **本地可检索**：作者与读者在本地用 `find`、Windows 文件搜索按标题找卡片时，
+   文件名就是标题，一搜即中，不必去记 `B7C3` 这类编号。
+3. **阅读顺序依然明确**：编号在导航页承担"第几课"的职责。读者从 README 进入，
+   先看编号排序、再点标题，两全其美。
+4. **插入新卡的破坏面 = 0**：在 Block 中间插入一张卡，只需导航页里的编号平移，
+   **既有卡片文件一个都不用动，没有一个链接会失效**。
+
+**为什么每个 Block 建目录**：
+
+- GitHub 的目录浏览页与本地 VSCode / 文件管理器都按目录分栏展示。
+  几百张卡片平铺在一个目录里，浏览页会拉成一条看不到底的长列表，
+  VSCode 侧边栏也会挤满同名文件，检索体验很差。
+- 按 Block 建目录后，浏览页第一层只有十几个文件夹，展开即见本 Block 的卡片；
+  本地侧边栏变成一棵可折叠的树，与导航页的分组一一对应。
+- 目录名带 Block 号，磁盘上看到的顺序与导航页上的顺序天然一致，
+  `ls`、IDE 文件树、GitHub 目录页三处排序统一。
+- 代价是卡片 URL 里多了一层目录。**这一层是稳的**——目录名只随 Block 号与 ASCII 短名变，
+  而这两者都是人工一次性设计定稿的，与会平移的 Card 号不同。
+
+- C 与 C++ 各自独立编号与目录树，编号空间不共享（C 与 CPP 目录下的 `B1C1` 是两张不同的卡）。
+- **编号只 MUST 出现在导航页**。卡片文件（文件名、H1、正文、代码注释）MUST NOT 出现 `BmCn` 形式的编号——
+  一旦编号进入正文，插入新卡时就得回头改旧卡，"破坏面 = 0" 的收益立刻归零。
+  （目录名里的 `B02` 是 Block 号，不是 Card 编号，不受此限。）
+- **Block 号 `m` 与 Block 目录**：
+  - MUST 由人工设计并确定，MUST NOT 由 AI 自行分配；
+  - 一经分配 MUST NOT 变更，MUST NOT 与其他 Block 交换序号；
+  - 新增 Block MUST 追加在末尾（`m` 取当前最大值 + 1），MUST NOT 插队；
+  - Block 号 MUST 补零到两位（`B01`、`B02`…），保证 `ls` 与 IDE 文件树按数字自然排序；
+  - Block 号 MUST 在同一语言内连续、不留空洞；
+  - **Block 目录名 MUST 为 `B<两位补零>_<ASCII 短名>`**：ASCII 短名 MUST 只含小写英文字母、数字与连字符，
+    MUST NOT 含中文、空格与大写字母；
+  - Block 的中文主题名 MUST 写在导航页的 Block 分组标题里（如 `### B02 · 指针与内存`），
+    与磁盘目录 `B02_pointers/` 一一对应；
+  - **Block 目录名一经创建 MUST NOT 变更**：Block 的划分与命名 MUST 经过人工对照书本复核后定稿，
+    目录名在每张卡片的 URL 里，改名等于一次性作废该 Block 下所有卡片的外部链接。
+- **Card 号 `n`**：
+  - MUST 表示该卡在 Block 内的位置（第几课），MUST 在同一 Block 内连续、不留空洞；
+  - 在 Block 中间插入卡片时，MUST 在**导航页**平移后续卡的编号；
+  - 平移 MUST NOT 触及其他 Block 的编号；
+  - 修订既有卡片的内容 MUST NOT 触发编号平移（改内容不等于改位置）。
+- **卡片文件名 MUST 等于卡片标题**（去掉不适合做文件名的字符后），以便本地按标题检索。
+- **卡片标题 MUST 自解释**：读者脱离上下文也知道它在讲什么（如「指针与数组」而非「指针（二）」）；
+  MUST NOT 使用"（一）""上/下""续"等序列后缀 —— 顺序职责由导航页的编号承担。
+- **卡片标题发布后 SHOULD NOT 变更**（标题即 URL，改标题就会改链接）。
+  内容修正只改正文，不动标题。
+- 确需变更标题时，MUST 在同一次提交内同步改名文件 + 更新全部仓库内链接，
+  并在提交信息中给出「旧名 → 新名」对照表。
+- 文件名 MUST 使用 Unicode **NFC** 规范化；MUST NOT 含空格（空格在 URL 中变成 `%20`），
+  必要的空格 MUST 用 `_` 代替；MUST NOT 含 `/ \ : * ? " < > |`；
+  MUST NOT 以空格或 `.` 开头或结尾；MUST NOT 带 `BmCn` 形式的编号前缀；扩展名固定 `.md`。
+- 文件名（含扩展名）MUST NOT 超过 60 字节（中文标题约 20 字以内），为跨平台路径长度留余量。
+- Block 目录的 ASCII 短名 SHOULD 简短（≤ 24 字符），控制 URL 长度。
+- **同一 Block 目录内**文件名 MUST 唯一。冲突时 MUST 通过调整标题消解，MUST NOT 加编号后缀绕开。
+  跨 Block 允许同名（C 与 C++ 目录之间、以及不同 Block 之间），由所在目录消歧。
+
+### IV. 目录先行 + 人工审批门（NON-NEGOTIABLE）
+
+卡片正文 MUST NOT 先行。在写任何一张卡片之前，必须先完成全量目录（导航页），
+并且**必须**由人工逐条勾选放行。
+
+**理由**：本项目的作者手上有大量"侯捷"系列 C/C++ 书籍，需要对照书籍目录来校验
+Block 的切分粒度与顺序是否合理。这是一次性的、也是最高杠杆的一次人工投入：
+它决定了后面几百张卡片的骨架。这一步如果跳过或由 AI 代替拍板，返工成本会扩散到整个仓库。
+
+- 导航页路径固定为 `C/README_C.md` 与 `CPP/README_CPP.md`。
+- 导航页 MUST 覆盖全量计划卡片，按 Block 分组，**每张卡片一行**，包含：
+  **编号** `B<m>C<n>`、**超链接**（指向卡片文件）、**一句话概括**、**复选框**。
+- 导航页 MUST 是编号的唯一权威来源。编号 MUST NOT 出现在任何卡片文件里。
+- 导航页 MUST NOT 预先撰写卡片正文，链接指向尚未实现的卡片文件时 MUST 保持链接形式（便于后续统一检查）。
+- **审批门是双份的**：导航页复选框之外，每张卡片在 speckit 内 MUST 同时建立一份
+  `specs/<NNN>-<slug>/checklists/` 质量门清单。两份清单都要过，缺一不可。
+- 两份清单的勾选权都属于**人工**：
+  - AI MUST NOT 把任何导航复选框由 `[ ]` 改为 `[x]`；
+  - AI MUST NOT 勾选 speckit `checklists/` 下的任何复选框；
+  - AI MUST NOT 因"卡片已写完"而自行勾选；
+  - AI MUST NOT 删除、合并、跳过导航中已存在的条目来规避审批。
+- 只有导航中已被人工勾选的卡片，MUST 才允许进入正文撰写阶段。
+- 卡片写完后 MUST 回填该卡片的"一句话概括"与链接校验，但 MUST NOT 改动复选框状态。
+- 导航页的结构调整（增删 Block、调整卡片顺序）MUST 先由人工决定，MUST NOT 由 AI 单方面重排。
+- Block 的分组标题 MUST 包含 Block 号与中文主题名（如 `### B02 · 指针与内存`），
+  MUST 与磁盘上的 Block 目录 `B02_pointers/` 一一对应。
+
+### V. 示例可编译、标准可追溯
+
+代码示例是本项目的主要价值载体，必须真实、可编译、可运行。
+
+**理由**：读者是要动手写代码、读懂大模型代码的人。一个编译不过的示例会让读者怀疑整张卡片，
+而一个不标注标准的示例会让读者在 `printf` 与 `cout`、指针与引用、
+`auto` 的 C 与 C++ 差异之间反复踩坑。
+
+- 每张含代码的卡片 MUST 标明所依据的语言标准版本：C 用 `C11`/`C17`，C++ 用 `C++11`/`C++14`/`C++17`/`C++20`。
+- 上述标准版本 MUST 以速查表中的一行显式呈现（如 `| 标准 | C17 |`），
+  MUST NOT 只在正文段落里顺带一提。
+- 代码示例 MUST 语法完整、可编译，MUST NOT 使用 `...`、`// 省略若干行` 之类的占位省略；
+  确需精简时 MUST 删掉整个分支而不是留省略号。
+- 关键示例 SHOULD 提供完整的 `main` 与 `#include`，使读者可以整段复制编译。
+- 代码块 MUST 标注语言（```c / ```cpp / ```bash / ```text）。
+- C 卡片与 C++ 卡片 MUST NOT 混用语言特性。C++ 卡片中出现 C 语法时 MUST 明确说明二者差异。
+- 涉及「C 与 C++ 同名不同义」的语法（如 `new`/`delete`、默认参数、`bool`）时，
+  MUST 在卡片内显式对比，C++ 卡片 MUST 标注其在 C 中的对应物。
+- 涉及编译器/平台差异（`gcc`/`clang`/`msvc`、Linux/Windows）时 MUST 标注，
+  MUST NOT 只给单一平台的结论而不作说明。
+
+### VI. 目标导向：读懂工程代码与 AI 生成代码
+
+卡片选取的标准是：**当我在工作里看到一段 C/C++ 代码或大模型的输出时，我能看懂它在做什么。**
+
+**理由**：本项目的终点不是"通过考试"，而是"能读懂、能审查、能手写"。
+因此知识取舍偏向**现代工程实践中真实出现的写法**，而非教科书式的完整枚举。
+任何一个软件或编程语言中，每天在用的"热点功能"只占全部功能的 20%，这部分热点功能需要形成肌肉记忆；
+剩下 80% 的功能一年也用不到几次，或者需要时再查。所以为了提高本项目卡片的价值，采取第一性原理：贴合实战。
+
+- 卡片 MUST 覆盖现代 C/C++ 工程的主流写法，MUST NOT 只停留在教材语法：
+  C 侧包含指针/数组/结构体/联合体/位运算/函数指针/生命周期与 `const` 语义；
+  C++ 侧包含 RAII、智能指针、值语义与引用语义、容器与迭代器、模板基础、
+  移动语义、异常与错误处理、`auto`/类型推导、范围 `for`。
+- 每个 Block MUST 在开头（导航页该 Block 的分组说明处）说明本 Block 的学习目标与前置卡片。
+- 卡片 MUST 说明该知识点**在真实代码里长什么样**，MUST NOT 只给孤立的语法片段。
+- 涉及取舍的知识点 MUST 给出「什么时候用 / 什么时候别用」的判断依据。
+- MUST NOT 收录与 C/C++ 语法无关的内容（运维实操、算法题解、IDE 使用教程、泛泛的工程哲学）。
+- 语言版本演进（历史包袱、已废弃写法）MUST 以「注意」形式附注，MUST NOT 占据正文主体。
+
+### VII. 工具链边界：只走 /speckit 流水线
+
+卡片的撰写 MUST 通过 `/speckit` 系列斜杠命令完成，命令定义目录 `.opencode/` 是**只读**的。
+
+**理由**：`.opencode/commands/` 承载了整套 Spec Kit 工作流的定义，改动它会让本仓库与
+上游 Spec Kit 产生分叉，未来无法升级；同时"AI 自己改自己的规则"会让审批门形同虚设。
+
+- 卡片编写 MUST 通过 `/speckit.specify` → `/speckit.clarify` → `/speckit.plan` → `/speckit.tasks`
+  → `/speckit.analyze` → `/speckit.implement` 流水线完成。
+- `.opencode/` 下的任何文件 MUST NOT 被创建、修改或删除。
+- `.specify/templates/` 与 `.specify/memory/constitution.md` MUST NOT 被手工编辑，
+  宪法 MUST 通过 `/speckit.constitution` 变更。
+- 一次 `/speckit.specify` MUST 只对应一张卡片（MUST NOT 一次规划多张卡片）。
+- 提交时 MUST 一张卡片一个提交（或一个 Block 一组紧密相关的卡片一个提交），
+  MUST NOT 把导航页与卡片正文混在同一个提交里导致审批记录失真。
+
+## 内容与格式规范
+
+### 仓库目录结构
+
+仓库 MUST 采用"语言 → Block 目录 → 卡片文件"的三层结构：
+
+```text
+C/
+├── README_C.md                  # 导航页，唯一入口
+├── GLOSSARY_C.md                # 术语表
+├── B01_basics/                  # Block 目录：ASCII 短名
+│   ├── 第一个程序.md
+│   ├── 变量与类型.md
+│   └── 运算符与表达式.md
+└── B02_pointers/                # Block 目录：ASCII 短名
+    ├── 指针与数组.md
+    └── 函数指针.md
+CPP/
+├── README_CPP.md                # 导航页，唯一入口
+├── GLOSSARY_CPP.md              # 术语表（含 C 全部术语，独立完整）
+├── B01_basics/
+│   └── ...
+└── B02_objects/
+    └── ...
+```
+
+- 每个语言目录下 MUST 有一个导航页（`C/README_C.md`、`CPP/README_CPP.md`），
+  它 MUST 是该语言所有卡片的唯一入口。
+- 每个语言目录下 MUST 有一份术语表（`C/GLOSSARY_C.md`、`CPP/GLOSSARY_CPP.md`）。
+- 每个 Block MUST 对应一个目录，目录名格式 MUST 为 `B<两位补零>_<ASCII 短名>`。
+- 卡片 MUST 直接放在所属 Block 目录内，MUST NOT 再建子目录。
+- 磁盘上的 Block 目录 MUST 与导航页的 Block 分组**一一对应**：
+  MUST NOT 出现"导航有 B03 而磁盘无 B03 目录"或反之。
+- Block 目录 MUST NOT 放入卡片以外的产物（构建产物、临时文件等）。
+- MUST NOT 引入 `docs/` 之类的第三层目录；本仓库只有语言目录、Block 目录与卡片文件三层。
+
+### 语言与排版
+
+- 叙述文字 MUST 使用简体中文；代码标识符、注释中的技术名词 MUST 使用英文。
+- 关键术语首次出现时 MUST 给出「中文（English）」形式，其后可只用中文或只用英文。
+- 全仓库 MUST 使用同一套术语译法（例如统一用"引用"而不用"地址"泛指 `&`）。
+- 术语表 MUST 沉淀在 `C/GLOSSARY_C.md` 与 `CPP/GLOSSARY_CPP.md`，
+  MUST NOT 在各卡片里各自造词。
+- **C++ 是 C 的超集**，因此 `GLOSSARY_CPP.md` MUST 完整包含 `GLOSSARY_C.md` 的全部术语。
+  两份文件各自独立、完整自洽，读者读 C++ 术语表时 MUST NOT 需要再去翻 C 术语表。
+  重复是刻意的代价（"不怕重复，力求术语表独立正确"）。
+- 标题层级 MUST 从 `#` 开始且不跳级；每张卡片 MUST 只有一个 `#` 一级标题。
+- 段落 SHOULD 一段一意，长段落 SHOULD 拆分为列表或表格。
+
+### 卡片骨架
+
+每张卡片的章节骨架 SHOULD 为：
+
+```text
+# <卡片标题>
+## 摘要            (结论 + 速查表)
+## 正文            (原理、场景、坑)
+## 延伸阅读        (链接到本仓库其他卡片)
+```
+
+- 「摘要」「正文」为 MUST，「延伸阅读」为 SHOULD。
+- H1 MUST 等于文件名去掉 `.md` 后的文字，且 MUST NOT 带 `BmCn` 形式的编号前缀。
+- 卡片 MUST NOT 出现"本文将介绍……"式的导语段；第一段就是结论。
+
+### 卡片互链规则
+
+卡片之间 MUST 通过**相对路径**互链。路径以文件名为主体，目录层用 `..` 跨出：
+
+| 引用场景 | 链接写法 | 示例 |
+|----------|----------|------|
+| 导航页 → 卡片 | `./<Block目录>/<标题>.md` | `[指针与数组](./B02_pointers/指针与数组.md)` |
+| 同 Block 内 → 卡片 | `./<标题>.md` | `[函数指针](./函数指针.md)` |
+| 跨 Block → 卡片 | `../<Block目录>/<标题>.md` | `[动态内存](../B03_memory/动态内存.md)` |
+
+- 链接 MUST 使用**相对路径**，MUST NOT 写绝对 URL（`https://github.com/...`）或仓库绝对路径。
+- MUST NOT 以编号引用兄弟卡片（如"详见 B2C3"）—— 编号只存在于导航页，且会平移。
+  MUST 用超链接的链接文字承载标题。
+- 链接文字 SHOULD 就是目标卡片标题，MUST NOT 用"点这里""更多"之类的无意义文字。
+- 链接目标被改名（标题变更）或被移动（Block 之间调整）时，
+  MUST 在同一次提交内更新所有引用该文件的链接。
+- 链接目标 MUST 已在导航页中登记（可能尚未实现）；
+  MUST NOT 指向导航页之外的任何文件。
+
+### 3000 字元的计量口径
+
+计量 MUST 采用以下口径，以便自动化校验：
+
+1. 剔除所有围栏代码块（``` ``` ``` 之间的内容）与 Markdown 标记符号。
+2. 剔除所有标点与符号（中文标点、英文标点、`#`、`*`、`|`、`` ` ``、`-` 等）。
+3. 中文字符按 1 计；连续的英文字母/数字串按 1 计。
+4. 剩余计数之和 MUST ≤ 3000。
+
+代码块不计入上述字数，但受 120 行总上限约束。
+
+建议用以下方式快速校验（是否纳入仓库工具链由你决定）：
+
+```bash
+python3 - <<'PY'
+import re, sys, pathlib
+raw = pathlib.Path(sys.argv[1]).read_text(encoding='utf-8')
+code = re.findall(r'```.*?```', raw, flags=re.S)        # 已闭合的代码块
+code_lines = sum(len(b.splitlines()) - 2 for b in code) # 去掉 ``` 围栏行
+t = re.sub(r'```.*?```', '', raw, flags=re.S)            # 去掉代码块
+t = re.sub(r'[#*`|>_\-\[\]()!]', '', t)                 # 去掉标记与符号
+t = re.sub(r'[^\w\u4e00-\u9fff]+', ' ', t)              # 去掉标点
+zh = re.findall(r'[\u4e00-\u9fff]', t)
+en = re.findall(r'\w+', re.sub(r'[\u4e00-\u9fff]', ' ', t))
+print(f"字数={len(zh)+len(en)} (需<=3000)  代码行={code_lines} (需<=120)")
+PY
+```
+
+### 不属于本项目的内容
+
+MUST NOT 收录：与 C/C++ 语法无关的运维/系统管理内容、算法题解与刷题记录、
+IDE 或编辑器使用教程、语言无关的通用编程思想（除非能直接映射到 C/C++ 语法）。
+
+## 编写工作流与质量门
+
+### 流水线与 speckit 的映射
+
+- **一次 speckit feature = 一张卡片**。`specs/<NNN>-<slug>/` 下的 spec/plan/tasks 描述这张卡片。
+- 导航页（`C/README_C.md`、`CPP/README_CPP.md`）本身 MAY 作为独立的 feature 产出，
+  但 MUST NOT 与卡片正文混在同一个 feature 内。
+- `/speckit.clarify` MUST 在 `/speckit.plan` 之前完成，消除规格歧义。
+- `/speckit.plan` 的 `## Constitution Check` 门禁 MUST 通过，才允许进入 `/speckit.tasks`。
+- `/speckit.analyze` MUST 在 `/speckit.tasks` 之后执行，宪法违规 MUST 全部清零才允许进入 `/speckit.implement`。
+- 实现阶段 MAY 顺带修改其他卡片（如补一条跨卡链接、修正旧卡的错别字），
+  但 MUST 在提交信息或对话中明确告知用户改了哪些文件。
+
+### 分阶段流程
+
+| 阶段 | 动作 | 产物 | 放行条件 |
+|------|------|------|----------|
+| 0 | 人工核对目录结构 | Block 划分、Block 目录名、卡片清单 | 人工对照书籍目录确认切分合理 |
+| 1 | 编写导航页 | `C/README_C.md`、`CPP/README_CPP.md` 全量条目 + 复选框 + Block 目录骨架 | 人工逐条勾选 |
+| 2 | 撰写单张卡片 | `<语言>/<Block目录>/<标题>.md` | 该卡在导航中已被勾选 |
+| 3 | 回填导航 | 更新该卡的一句话概括与链接 | 不改动复选框 |
+| 4 | 提交 | 一次提交一张卡片 | 自检清单全绿 |
+
+### 插入卡片与编号平移（编号变更专项）
+
+在 Block 中间插入一张新卡时，**不需要重命名任何既有文件，也不会有任何链接失效**。
+只需三步：
+
+1. 确定新卡在 Block 中的位置与它的编号 `n`；
+2. 在**导航页**把该 Block 内后续卡的编号依次 +1；
+3. 在导航页插入新卡的一行（编号、标题超链接、一句话概括、复选框），
+   并在对应 Block 目录下新建以标题命名的卡片文件。
+
+- 第 2、3 步 MUST 在同一次提交内完成，导航页 MUST NOT 出现编号空洞或重号。
+- 插入 MUST NOT 触碰任何既有卡片文件（不改名、不改内容、不改链接）。
+- 插入 MUST NOT 触及其他 Block 的编号或目录。
+- 编号平移 MUST NOT 破坏任何链接 —— 链接指向的是文件名，而文件名不含编号。
+  **这正是"编号不进文件名"换来的最大好处。**
+- 导航页 SHOULD 用表格承载编号与标题两列，保证编号升序、标题对齐，方便读者扫读。
+
+导航页的推荐行格式：
+
+```markdown
+### B02 · 指针与内存
+
+| 编号 | 卡片 | 一句话概括 | 审批 |
+|------|------|-----------|------|
+| B2C1 | [指针与数组](./B02_pointers/指针与数组.md) | 指针到底是什么：地址、算术与 decay 的统一解释 | [ ] |
+| B2C2 | [函数指针](./B02_pointers/函数指针.md) | 把函数当数据用，回调、qsort 与函数表 | [ ] |
+```
+
+### 单卡自检清单（`/speckit.implement` 收尾 MUST 逐条确认）
+
+- [ ] 只讲了一个核心知识点，且「本卡边界」写明了不讲什么。
+- [ ] 字元数 ≤ 3000（按上文口径），代码行数 ≤ 120。
+- [ ] 开头是「摘要」，含速查表；无导语段。
+- [ ] 无参考文献章节；延伸阅读只链本仓库卡片，且用相对路径超链接。
+- [ ] 代码可编译，标注了标准版本与语言标记。
+- [ ] 文件名 = 卡片标题，无编号前缀，NFC 规范化，无空格与非法字符，同 Block 目录内唯一。
+- [ ] 卡片文件内（文件名、H1、正文、注释）均未出现 `BmCn` 形式的 Card 编号。
+- [ ] 卡片位于正确的 Block 目录（`B<两位补零>_<ASCII短名>/`）内，目录名与导航页 Block 分组对应。
+- [ ] 速查表中已标注语言标准版本（`标准 | C17` / `标准 | C++17`）。
+- [ ] 若本次涉及插入新卡：导航页编号连续无空洞，既有卡片文件未被触碰，无失效链接。
+- [ ] speckit 的 `checklists/` 质量门清单已建立，且两份清单的复选框均未被 AI 勾选。
+- [ ] 导航页该条已更新概括与链接，且**复选框状态未被 AI 改动**。
+- [ ] 未修改 `.opencode/` 与 `.specify/templates/`。
+
+### 提交纪律
+
+- MUST NOT 提交未被人工勾选的卡片。
+- MUST NOT 提交"占位式"卡片（只有标题、正文未完成的卡片）。
+- 一次提交 SHOULD 只包含一张卡片与对应的导航回填。
+- 含编号平移的提交 SHOULD 独立成一个提交，MUST NOT 与新卡内容混在同一次提交里 ——
+  否则读者无法分辨"哪些卡是新增的"和"哪些卡的编号变了"。
+- 顺带修改了本次范围之外的卡片时，MUST 在提交信息中列出被改动的文件清单。
+
+## 治理
+
+### 优先级
+
+- 本宪法优先于项目内其他任何写作习惯、提示词或既有约定。
+- 与本宪法冲突的既有内容（例如已发布的卡片写法）MUST 在下次修订该卡片时改正，
+  MUST NOT 以"历史原因"为由长期保留冲突。
+- 原则 MUST NOT 被稀释、重新解释或静默忽略。若某条原则确实不再适用，
+  MUST 通过一次独立的宪法修订来变更它，MUST NOT 在撰写卡片时临时绕开。
+
+### 修订流程
+
+1. 在 `.harness/init_constitution.md`（或你指定的其他草案位置）修改条款；
+2. 人工确认后执行 `/speckit.constitution`，由该命令写入 `.specify/memory/constitution.md`，
+   并按语义化版本号规则决定版本号；
+3. 修订 MUST 附带影响说明：哪些既有卡片因此需要返工。
+
+### 版本号规则
+
+- **MAJOR**：删除或重定义原则，改变既有卡片的合规判定。
+- **MINOR**：新增原则/章节，或实质性扩充既有原则的约束。
+- **PATCH**：措辞、错别字、非语义澄清。
+
+### 合规检查点
+
+- 每张卡片完成时 MUST 过一遍「单卡自检清单」。
+- 每完成一个 Block，MUST 复查该 Block 内部卡片的术语一致性与重复度。
+- `/speckit.analyze` 报告中的宪法违规 MUST 当作 CRITICAL 处理，MUST NOT 以"文档取舍"为由忽略。
+
+**Version**: 1.0.0 | **Ratified**: 2026-11-17 | **Last Amended**: 2026-11-18
