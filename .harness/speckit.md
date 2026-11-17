@@ -2,8 +2,7 @@
 <宪法模板>
 
 # /speckit.specify
-<feature提示词>
-
+根据C语言的导航页`C/README_C.md` ， 现在需要撰写知识小卡片“B01C01”，请你设计feature的spec。
 
 
 # 是否进行clarify
